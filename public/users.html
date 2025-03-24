@@ -131,8 +131,8 @@
             fetchUsers();
             const token = getToken();
             if (!token) {
-                alert("token no ingresado debe iniciar sesion, no tiene permisos para permanecer en esta pantalla")
-                window.location.href = '/';
+                //alert("token no ingresado debe iniciar sesion, no tiene permisos para permanecer en esta pantalla")
+                showModal('Token no ingresado, debe iniciar sesión. No tiene permisos para permanecer en esta pantalla.', 'error');
             }
         });
 
@@ -269,7 +269,7 @@
             .catch(error => console.error('Error deleting user:', error));
         }
 
-        function showModal(message) {
+        function showModal(message, status) {
             const modal = document.createElement('div');
             modal.id = 'modal';
             modal.style.position = 'fixed';
@@ -280,11 +280,28 @@
             modal.style.padding = '20px';
             modal.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
             modal.style.zIndex = '1000';
-            modal.innerHTML = `
+            if (status === 'error') {
+                modal.style.backgroundColor = '#f8d7da';
+                modal.style.color = '#721c24';
+                modal.innerHTML = `
+                    <p>${message}</p>
+                    <button onclick="closeAll()">Cerrar</button>
+                `;
+
+            } else {
+                modal.style.backgroundColor = '#d4edda';
+                modal.style.color = '#155724';
+                modal.innerHTML = `
                 <p>${message}</p>
                 <button onclick="closeModal()">Cerrar</button>
-            `;
+                `;
+
+            }
             document.body.appendChild(modal);
+        }
+
+        closeAll () {
+            window.location.href = '/';
         }
 
         function closeModal() {

@@ -165,11 +165,12 @@
         document.addEventListener('DOMContentLoaded', () => {
             const token = getToken();
             if (!token) {
-                window.location.href = '/';
-                alert("token no ingresado debe iniciar sesion, no tiene permisos para permanecer en esta pantalla")
+                showModal("token no ingresado debe iniciar sesion, no tiene permisos para permanecer en esta pantalla", 'error');
+                //alert("token no ingresado debe iniciar sesion, no tiene permisos para permanecer en esta pantalla")
             }
             fetchUsers();
         });
+
         
 
         
@@ -249,7 +250,7 @@
             document.getElementById('modal').remove();
         }
 
-        function showModal(message) {
+        function showModal(message, status) {
             const modal = document.createElement('div');
             modal.id = 'modal';
             modal.style.position = 'fixed';
@@ -260,11 +261,24 @@
             modal.style.padding = '20px';
             modal.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
             modal.style.zIndex = '1000';
-            modal.innerHTML = `
-                <p>${message}</p>
-                <button onclick="closeModal()">Cerrar</button>
-            `;
+            if (status === 'error') {
+                modal.innerHTML = `
+                    <p>${message}</p>
+                    <button onclick="closeAll()">Aceptar</button>
+                `;
+
+            } else {
+                modal.innerHTML = `
+                    <p>${message}</p>
+                    <button onclick="closeModal()">Cerrar</button>
+                `;
+
+            }
             document.body.appendChild(modal);
+        }
+
+        function closeAll () {
+            window.location.href = '/';
         }
 
 
