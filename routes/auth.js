@@ -37,30 +37,22 @@ router.post('/register', async (req, res, next) => {
 // Inicio de sesión de usuario
 router.post('/login', async (req, res, next) => {
     try {
-        const { username, password } = req.body;
-        
-        usersController.getUserByUsername(username)
+        const { email, password } = req.body;
+        console.log("username o correo a buscar", email)
+        usersController.loginUser(email, password)
         .then(async (user) => {
             if (!user) {
                 return res.status(404).json({ message: 'Usuario no encontrado' });
             }
             
-            const isPasswordValid = await bcrypt.compare(password, user.password);
-            if (!isPasswordValid) {
-                return res.status(401).json({ message: 'Contraseña incorrecta' });
-            }
-            
-            const token = generateToken(user);
-            res.json({ 
-                token,
-                user: {
-                    id: user.id,
-                    username: user.username
-                }
-            });
+            res.json(user)
         })
         .catch(next);
     } catch (error) {
+        console.log("error del auth al hacer loginUser", error)
+        if (error.status === 400) {
+            return res.status(400).json({ message: error.error });
+        }
         next(error);
     }
 });

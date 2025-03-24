@@ -43,7 +43,12 @@ app.get('/', (req, res) => {
     console.log("Entra en index")
     res.sendFile(path.join(__dirname, 'public', 'home.html'));
 });
-// res.sendFile(path.join(__dirname, 'public', 'index.html'));
+
+app.get('/home', (req, res) => {
+    console.log("Entra en home")
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 app.get('/usersVista', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'users.html'));
 });

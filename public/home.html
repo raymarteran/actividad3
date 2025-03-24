@@ -101,12 +101,12 @@
                         localStorage.setItem('token', data.token);
                         window.location.href = '/home';
                 } else {
-                    alert('Login failed: ' + data.message);
+                    showModal(data.message, 'error');
                 }
             })
             .catch(error => {
                 console.error('Error logging in:', error);
-                alert('Error logging in: ' + error.message);
+                showModal("Error al iniciar sesión: " + error.message, 'error');
             });
         }
 

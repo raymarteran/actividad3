@@ -156,30 +156,22 @@ class UsersController {
         });
     };
 
-    getUserByUsername = async (username) => {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const user = await User.findOne({ userName: username });
-                resolve(user);
-            } catch (error) {
-                console.error("Error en getUserByUsername:", error);
-                reject({ status: 500, error: 'Error al obtener el usuario' });
-            }
-        });
-    };
 
     loginUser = async (username, password) => {
         return new Promise(async (resolve, reject) => {
             try {
-                const user = await User.findOne({ userName: username });
+                const user = await User.findOne()
+                .or([{ userName: username }, { email: username }]);
                 if (!user) {
                     resolve({ status: 404, message: 'Usuario no encontrado' });
                 }
+                console.log("usuario encontrado", user)
                 const isPasswordValid = await bcrypt.compare(password, user.password);
                 if (!isPasswordValid) {
                     resolve({ status: 401, message: 'Contraseña incorrecta' });
                 }
-                resolve({ status: 200, message: 'Login exitoso', user });
+                const token = generateToken(user);
+                resolve({ status: 200, message: 'Login exitoso', user, token });
             } catch (error) {
                 console.error("Error en loginUser:", error);
                 reject({ status: 500, error: 'Error al iniciar sesión' });
