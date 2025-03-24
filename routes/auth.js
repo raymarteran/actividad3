@@ -8,27 +8,27 @@ const usersController = new UsersController();
 // Registro de usuario
 router.post('/register', async (req, res, next) => {
     try {
-        const { name, lastName, userName, email, password } = req.body;
+        const { name, lastName, userName, email, password, repassword } = req.body;
         const newUser = { 
             name,
             lastName,
             email,
             userName,
-            password
+            password,
+            repassword
         };
-        
         usersController.postUser(newUser)
         .then((user) => {
-            const token = generateToken(user);
-            res.status(201).json({ 
-                token,
-                user: {
-                    id: user.id,
-                    userName: user.userName
-                }
-            });
+            console.log('respuesta del usersController', user)
+            res.status(201).json(user);
         })
-        .catch(next);
+        .catch(error => {
+            console.log("error del auth al hacer postUser", error)
+            if (error.status === 400) {
+                return res.status(400).json({ message: error.error });
+            }
+            next(error);
+        });
     } catch (error) {
         next(error);
     }

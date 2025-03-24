@@ -40,6 +40,7 @@ app.set('views', path.join(__dirname, 'views'));
 
 
 app.get('/', (req, res) => {
+    console.log("Entra en index")
     res.sendFile(path.join(__dirname, 'public', 'home.html'));
 });
 // res.sendFile(path.join(__dirname, 'public', 'index.html'));

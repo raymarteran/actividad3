@@ -69,6 +69,13 @@ class UsersController {
                     reject({ status: 400, error: 'El email ya existe' });
                     return;
                 }
+
+                //validar que no repita el username
+                const usernameExists = allUsers.some(user => user.userName === newUser.userName);
+                if (usernameExists) {
+                    reject({ status: 400, error: 'El username ya existe' });
+                    return;
+                }
                 
                 //se valida ahora desde el frontend para mejor UX
                 // Validar que las contraseñas coincidan
@@ -80,16 +87,15 @@ class UsersController {
                 // Encriptar la contraseña
                 newUser.password = bcrypt.hashSync(newUser.password, 10);
                 delete newUser.repassword;
-    
                 // Guardar el usuario
                 const user = new User(newUser); // Crear una instancia del modelo
-                const newUserCreado = await user.save(); // Guardar en la base de datos
-                const token = generateToken(newUserCreado);
+                await user.save(); // Guardar en la base de datos
+                const token = generateToken(user);
     
-                resolve({ status: 201, message: 'Usuario creado correctamente', user, token });
+                resolve({ status: 201, message: 'Usuario creado correctamente', token });
             } catch (error) {
                 console.error("Error en postUser:", error);
-                reject({ status: 500, error: 'Error al crear el usuario' });
+                reject({ status: 500, error: 'Error al crear el usuario', error });
             }
         });
     };
