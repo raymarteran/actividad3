@@ -156,51 +156,23 @@
         }
     </style>
     <script>
+        const token = localStorage.getItem('token');
+        console.log(token)
         function getToken() {
             return localStorage.getItem('token');
         }
         console.log(getToken())
         document.addEventListener('DOMContentLoaded', () => {
             const token = getToken();
-            alert("token no ingresado debe iniciar sesion, no tiene permisos para permanecer en esta pantalla")
             if (!token) {
                 window.location.href = '/';
+                alert("token no ingresado debe iniciar sesion, no tiene permisos para permanecer en esta pantalla")
             }
-            fetchPublicaciones();
             fetchUsers();
         });
         
 
-        function fetchPublicaciones() {
-            fetch('/api/publi')
-            .then(response => response.json())
-            .then(data => {
-                const publicacionesList = document.getElementById('publicacionesList');
-                publicacionesList.innerHTML = '';
-                data.forEach(publicacion => {
-                const publicacionElement = document.createElement('li');
-                publicacionElement.classList.add('publication');
-                const formattedDate = new Date(publicacion.createdAt).toLocaleDateString('es-ES', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric'
-                });
-                publicacionElement.innerHTML = `
-                    <h2>${publicacion.title}</h2>
-                    <p>${publicacion.description}</p>
-                    <img src="${publicacion.urlMedia}" alt="${publicacion.title}">
-                    <span class="user">Creado por: ${publicacion.User.userName}</span>
-                    <span class="date">Fecha de creación: ${formattedDate}</span>
-                    <button onclick="viewComments('${publicacion._id}', this)" class="comments-button">Ver comentarios</button>
-                    <button onclick="deletePublicacion('${publicacion._id}')" class="delete-button">Eliminar</button>
-                    <button onclick="showEditForm('${publicacion._id}', '${publicacion.title}', '${publicacion.description}', '${publicacion.urlMedia}', '${publicacion.User._id}')" class="edit-button">Modificar</button>
-                    <div class="comments" id="comments-${publicacion._id}" style="display: none;"></div>
-                `;
-                publicacionesList.appendChild(publicacionElement);
-                });
-            })
-            .catch(error => console.error('Error fetching publicaciones:', error));
-        }
+        
 
         function viewComments(publicacionId, button) {
             const commentsDiv = document.getElementById(`comments-${publicacionId}`);
@@ -268,7 +240,6 @@
             .then(data => {
                 console.log(data)
                 showModal(data.message);
-                fetchPublicaciones();
                 document.getElementById('publicationForm').reset();
                 document.getElementById('createPublicationForm').style.display = 'none';
             })
@@ -331,7 +302,6 @@
             .then(response => response.json())
             .then(data => {
                 showModal(data.message);
-                fetchPublicaciones();
             })
             .catch(error => console.error('Error deleting publication:', error));
         }
@@ -367,7 +337,6 @@
             .then(response => response.json())
             .then(data => {
                 showModal(data.message);
-                fetchPublicaciones();
                 document.getElementById('editPublicationFormss').reset();
                 document.getElementById('editPublicationForm').style.display = 'none';
             })
