@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publicbs - Categorías</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h2 {
+            color: #333;
+        }
+        p {
+            color: #000;
+            font-size: 2em;
+            font-weight: bold;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 15px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #fff;
+        }
+        nav {
+            background-color: #007BFF;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        nav ul {
+            display: flex;
+            justify-content: flex-start;
+            margin: 0;
+            padding: 0;
+        }
+        nav li {
+            list-style: none;
+            cursor: pointer;
+            margin-right: 20px;
+        }
+        nav a {
+            color: #000;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        #createCategoryForm, #editCategoryForm {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+        #createCategoryForm input, #editCategoryForm input {
+            display: block;
+            margin-bottom: 10px;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .create-button, .edit-button {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        .create-button:hover, .edit-button:hover {
+            background-color: #218838;
+        }
+        .delete-button {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        .delete-button:hover {
+            background-color: #c82333;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('createCategoryDiv').style.display = 'none';
+            document.getElementById('editCategoryDiv').style.display = 'none';
+            fetchCategories();
+        });
+
+        function fetchCategories() {
+            fetch('/categories')
+            .then(response => response.json())
+            .then(data => {
+                const categoriesList = document.getElementById('categoriesList');
+                categoriesList.innerHTML = '';
+                data.forEach(category => {
+                    console.log("category", category);
+                    const categoryElement = document.createElement('li');
+                    categoryElement.classList.add('category');
+                    categoryElement.innerHTML = `
+                        <h2>${category.name}</h2>
+                        <button onclick="showEditCategoryForm('${category._id}')" class="edit-button">Modificar</button>
+                        <button onclick="deleteCategory('${category._id}')" class="delete-button">Eliminar</button>
+                    `;
+                    categoriesList.appendChild(categoryElement);
+                });
+            })
+            .catch(error => console.error('Error fetching categories:', error));
+        }
+
+        function showCreateCategoryForm() {
+            document.getElementById('createCategoryDiv').style.display = 'block';
+            document.getElementById('editCategoryDiv').style.display = 'none';
+        }
+
+        function createCategory(event) {
+            event.preventDefault();
+            const name = document.getElementById('categoryName').value;
+
+            const category = {
+                name
+            };
+
+            fetch('/categories', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(category)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Category created:', data);
+                showModal('Categoría registrada exitosamente');
+                document.getElementById('createCategoryForm').reset();
+                document.getElementById('createCategoryDiv').style.display = 'none';
+                fetchCategories();
+            })
+            .catch(error => console.error('Error creating category:', error));
+        }
+
+        function showEditCategoryForm(categoryId) {
+            fetch(`/categories/${categoryId}`)
+            .then(response => response.json())
+            .then(category => {
+                document.getElementById('editCategoryId').value = category._id;
+                document.getElementById('editCategoryName').value = category.name;
+                document.getElementById('createCategoryDiv').style.display = 'none';
+                document.getElementById('editCategoryDiv').style.display = 'block';
+            })
+            .catch(error => console.error('Error fetching category:', error));
+        }
+
+        function editCategory(event) {
+            event.preventDefault();
+            const categoryId = document.getElementById('editCategoryId').value;
+            const name = document.getElementById('editCategoryName').value;
+
+            const category = {
+                name
+            };
+
+            fetch(`/categories/${categoryId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(category)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Category updated:', data);
+                showModal('Categoría modificada exitosamente');
+                document.getElementById('editCategoryForm').reset();
+                document.getElementById('editCategoryDiv').style.display = 'none';
+                fetchCategories();
+            })
+            .catch(error => console.error('Error updating category:', error));
+        }
+
+        function deleteCategory(categoryId) {
+            console.log("entra en deleteCategory")
+            console.log(categoryId)
+            fetch(`/categories/${categoryId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Category deleted:', data);
+                showModal('Categoría eliminada exitosamente');
+                fetchCategories();
+            })
+            .catch(error => console.error('Error deleting category:', error));
+        }
+
+        function showModal(message) {
+            const modal = document.createElement('div');
+            modal.id = 'modal';
+            modal.style.position = 'fixed';
+            modal.style.top = '50%';
+            modal.style.left = '50%';
+            modal.style.transform = 'translate(-50%, -50%)';
+            modal.style.backgroundColor = '#fff';
+            modal.style.padding = '20px';
+            modal.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
+            modal.style.zIndex = '1000';
+            modal.innerHTML = `
+                <p>${message}</p>
+                <button onclick="closeModal()">Cerrar</button>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            if (modal) {
+                document.body.removeChild(modal);
+            }
+        }
+    </script>
+</head>
+<body>
+    <p>Hola! Bienvenido</p>
+    <nav>
+        <ul>
+            <li><a href="#" onclick="showCreateCategoryForm()">Crear Categoría</a></li>
+            <li><a href="/">Home</a></li>
+        </ul>
+    </nav>
+    <div id="createCategoryDiv">
+        <h2>Crear Categoría</h2>
+        <form onsubmit="createCategory(event)" id="createCategoryForm">
+            <input type="text" id="categoryName" name="name" placeholder="Nombre de la categoría" required>
+            <button type="submit" class="create-button">Crear</button>
+        </form>
+    </div>
+    <div id="editCategoryDiv">
+        <h2>Modificar Categoría</h2>
+        <form onsubmit="editCategory(event)" id="editCategoryForm">
+            <input type="hidden" id="editCategoryId">
+            <input type="text" id="editCategoryName" name="name" placeholder="Nombre de la categoría" required>
+            <button type="submit" class="edit-button">Modificar</button>
+        </form>
+    </div>
+    <p id="welcomeMessage"></p>
+    <h2 id="categoriesTitle">Categorías</h2>
+    <ul id="categoriesList"></ul>
+    <p id="noCategories" style="display: none;">No hay categorías</p>
+</body>
+</html>

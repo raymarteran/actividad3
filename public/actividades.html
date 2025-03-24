@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publicbs - Actividades</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h2 {
+            color: #333;
+        }
+        p {
+            color: #000;
+            font-size: 2em;
+            font-weight: bold;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 15px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #fff;
+        }
+        nav {
+            background-color: #007BFF;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        nav ul {
+            display: flex;
+            justify-content: flex-start;
+            margin: 0;
+            padding: 0;
+        }
+        nav li {
+            list-style: none;
+            cursor: pointer;
+            margin-right: 20px;
+        }
+        nav a {
+            color: #000;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        #createActivityForm, #editActivityForm {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+        #createActivityForm input, #editActivityForm input, #createActivityForm select, #editActivityForm select {
+            display: block;
+            margin-bottom: 10px;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .create-button, .edit-button {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        .create-button:hover, .edit-button:hover {
+            background-color: #218838;
+        }
+        .delete-button {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        .delete-button:hover {
+            background-color: #c82333;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('createActivityDiv').style.display = 'none';
+            document.getElementById('editActivityDiv').style.display = 'none';
+            fetchActivities();
+            fetchCategories();
+            fetchUsers();
+        });
+
+        function fetchActivities() {
+            fetch('/actividad')
+            .then(response => response.json())
+            .then(data => {
+                const activitiesList = document.getElementById('activitiesList');
+                activitiesList.innerHTML = '';
+                data.forEach(activity => {
+                    console.log("activity", activity)
+                    const activityElement = document.createElement('li');
+                    activityElement.classList.add('activity');
+                    activityElement.innerHTML = `
+                        <h2>${activity.name}</h2>
+                        <p>Categoría: ${activity.idCategoria.name}</p>
+                        <p>Usuario: ${activity.idUser.name} ${activity.idUser.lastName}</p>
+                        <button onclick="showEditActivityForm('${activity._id}')" class="edit-button">Modificar</button>
+                        <button onclick="deleteActivity('${activity._id}')" class="delete-button">Eliminar</button>
+                    `;
+                    activitiesList.appendChild(activityElement);
+                });
+            })
+            .catch(error => console.error('Error fetching activities:', error));
+        }
+
+        function fetchCategories() {
+            fetch('/categories')
+            .then(response => response.json())
+            .then(data => {
+                const categorySelect = document.getElementById('activityCategory');
+                const editCategorySelect = document.getElementById('editActivityCategory');
+                categorySelect.innerHTML = '';
+                editCategorySelect.innerHTML = '';
+                data.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category._id;
+                    option.textContent = category.name;
+                    categorySelect.appendChild(option);
+                    editCategorySelect.appendChild(option.cloneNode(true));
+                });
+            })
+            .catch(error => console.error('Error fetching categories:', error));
+        }
+
+        function fetchUsers() {
+            fetch('/users')
+            .then(response => response.json())
+            .then(data => {
+                const userSelect = document.getElementById('activityUser');
+                const editUserSelect = document.getElementById('editActivityUser');
+                userSelect.innerHTML = '';
+                editUserSelect.innerHTML = '';
+                data.forEach(user => {
+                    const option = document.createElement('option');
+                    option.value = user._id;
+                    option.textContent = user.name;
+                    userSelect.appendChild(option);
+                    editUserSelect.appendChild(option.cloneNode(true));
+                });
+            })
+            .catch(error => console.error('Error fetching users:', error));
+        }
+
+        function showCreateActivityForm() {
+            document.getElementById('createActivityDiv').style.display = 'block';
+            document.getElementById('editActivityDiv').style.display = 'none';
+        }
+
+        function createActivity(event) {
+            event.preventDefault();
+            const name = document.getElementById('activityName').value;
+            const idCategoria = document.getElementById('activityCategory').value;
+            const idUser = document.getElementById('activityUser').value;
+
+            const activity = {
+                name,
+                idCategoria,
+                idUser
+            };
+
+            fetch('/actividad', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(activity)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Activity created:', data);
+                showModal('Actividad registrada exitosamente');
+                document.getElementById('createActivityForm').reset();
+                document.getElementById('createActivityDiv').style.display = 'none';
+                fetchActivities();
+            })
+            .catch(error => console.error('Error creating activity:', error));
+        }
+
+        function showEditActivityForm(activityId) {
+            fetch(`/actividad/${activityId}`)
+            .then(response => response.json())
+            .then(activity => {
+                document.getElementById('editActivityId').value = activity._id;
+                document.getElementById('editActivityName').value = activity.name;
+                document.getElementById('editActivityCategory').value = activity.idCategoria._id;
+                document.getElementById('editActivityUser').value = activity.idUser._id;
+                document.getElementById('createActivityDiv').style.display = 'none';
+                document.getElementById('editActivityDiv').style.display = 'block';
+            })
+            .catch(error => console.error('Error fetching activity:', error));
+        }
+
+        function editActivity(event) {
+            event.preventDefault();
+            const activityId = document.getElementById('editActivityId').value;
+            const name = document.getElementById('editActivityName').value;
+            const category = document.getElementById('editActivityCategory').value;
+            const user = document.getElementById('editActivityUser').value;
+
+            const activity = {
+                name,
+                category,
+                user
+            };
+
+            fetch(`/actividad/${activityId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(activity)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Activity updated:', data);
+                showModal('Actividad modificada exitosamente');
+                document.getElementById('editActivityForm').reset();
+                document.getElementById('editActivityDiv').style.display = 'none';
+                fetchActivities();
+            })
+            .catch(error => console.error('Error updating activity:', error));
+        }
+
+        function deleteActivity(activityId) {
+            fetch(`/actividad/${activityId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Activity deleted:', data);
+                showModal('Actividad eliminada exitosamente');
+                fetchActivities();
+            })
+            .catch(error => console.error('Error deleting activity:', error));
+        }
+
+        function showModal(message) {
+            const modal = document.createElement('div');
+            modal.id = 'modal';
+            modal.style.position = 'fixed';
+            modal.style.top = '50%';
+            modal.style.left = '50%';
+            modal.style.transform = 'translate(-50%, -50%)';
+            modal.style.backgroundColor = '#fff';
+            modal.style.padding = '20px';
+            modal.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
+            modal.style.zIndex = '1000';
+            modal.innerHTML = `
+                <p>${message}</p>
+                <button onclick="closeModal()">Cerrar</button>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            if (modal) {
+                document.body.removeChild(modal);
+            }
+        }
+    </script>
+</head>
+<body>
+    <p>Hola! Bienvenido</p>
+    <nav>
+        <ul>
+            <li><a href="#" onclick="showCreateActivityForm()">Crear Actividad</a></li>
+            <li><a href="/">Home</a></li>
+        </ul>
+    </nav>
+    <div id="createActivityDiv">
+        <h2>Crear Actividad</h2>
+        <form onsubmit="createActivity(event)" id="createActivityForm">
+            <input type="text" id="activityName" name="name" placeholder="Nombre de la actividad" required>
+            <select id="activityCategory" required>
+                <option value="">Seleccione una categoría</option>
+            </select>
+            <select id="activityUser" required>
+                <option value="">Seleccione un usuario</option>
+            </select>
+            <button type="submit" class="create-button">Crear</button>
+        </form>
+    </div>
+    <div id="editActivityDiv">
+        <h2>Modificar Actividad</h2>
+        <form onsubmit="editActivity(event)" id="editActivityForm">
+            <input type="hidden" id="editActivityId">
+            <input type="text" id="editActivityName" name="name" placeholder="Nombre de la actividad" required>
+            <select id="editActivityCategory" required>
+                <option value="">Seleccione una categoría</option>
+            </select>
+            <select id="editActivityUser" required>
+                <option value="">Seleccione un usuario</option>
+            </select>
+            <button type="submit" class="edit-button">Modificar</button>
+        </form>
+    </div>
+    <p id="welcomeMessage"></p>
+    <h2 id="activitiesTitle">Actividades</h2>
+    <ul id="activitiesList"></ul>
+    <p id="noActivities" style="display: none;">No hay actividades</p>
+</body>
+</html>

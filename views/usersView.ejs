@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Vista EJS</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+        }
+        body {
+            padding: 4rem;
+            background-color: #f5f5f5;
+        }
+        h2 {
+            margin-bottom: 1rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 15px;
+            border: 1px solid #ddd;
+            text-align: left;
+            vertical-align: middle;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+        button {
+            margin-top: 1rem;
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+    </style>
+</head>
+<body>
+    <h2>Usuarios</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Nombre de usuario</th>
+                <th>Correo</th>
+                <th>Permisos</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% usuarios.forEach(user => { %>
+                <tr>
+                    <td><%= user.name %></td>
+                    <td><%= user.lastName %></td>
+                    <td><%= user.userName %></td>
+                    <td><%= user.email %></td>
+                    <td><%= user.permission %></td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+    <div>
+        <button onclick="location.href='/';">Regresar al inicio</button>
+        
+    </div>
+</body>
+</html>

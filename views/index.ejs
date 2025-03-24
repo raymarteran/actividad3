@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Vista EJS</title>
+</head>
+<body>
+    <p><%= message %></p>
+    <h2>Indice de Rutas</h2>
+    <ul>
+        <li><a href="/usersView">/users</a> - Mostrar usuarios</li>
+        <li><a href="/actividadesview">/users/actividades-categoria-usuario/:id/:categoria</a> - Mostrar actividades por categor a y usuario</li>
+        <li><a href="/actividadesRealizadas">/users/last-actividadesrealizadas/:id</a> - Mostrar las ultimas 5 actividades realizadas por un usuario</li>
+        <li><a href="/categorias">/categories</a> - Mostrar categor as</li>
+        <li><a href="/actividad">/actividad</a> - Mostrar actividades</li>
+    </ul>
+</body>
+</html>
+
+<style>
+    p {
+        font-family: Arial, sans-serif;
+        font-size: 20px;
+        text-align: center;
+    }
+    body {
+        background-color: #f5f5f5;
+        padding: 4rem;
+    }
+    li {
+        font-family: Arial, sans-serif;
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+    a {
+        color: #333;
+        text-decoration: none;
+    }
+    a:hover {
+        color: #337ab7;
+    }
+    ul {
+        list-style-type: none;
+    }
+</style>

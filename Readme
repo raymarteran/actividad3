@@ -1,0 +1,85 @@
+# Node Express API
+
+Esta es una API de Node.js construida con Express.js. Proporciona endpoints para acceder a diferentes vistas.
+
+## Instalación
+
+1. Clona el repositorio:
+    ```bash
+    git clone <repository-url>
+    ```
+2. Navega al directorio del proyecto:
+    ```bash
+    cd <project-directory>
+    ```
+3. crear un archivo .env en la raiz del proyecto, que es el que va conectar con la base de datos
+
+4. Instala las dependencias:
+    ```bash
+    npm install
+    ```
+
+
+## Ejecutando la API
+
+Para iniciar el servidor, ejecuta el siguiente comando:
+```bash
+npm start
+```
+
+## En caso que de algun error con respecto al nodemon
+instalar el nodemon
+npm i nodemon
+
+
+
+## Endpoints Disponibles para la API
+
+La API proporciona los siguientes endpoints:
+
+- `/users`: Gestiona las operaciones relacionadas con los usuarios.
+- `/categories`: Gestiona las operaciones relacionadas con las Categorias.
+- `/actividad`: Gestiona las operaciones relacionadas con las actividades.
+- `/habito`: Gestiona las operaciones relacionadas con los Habitos.
+- `/proyecto`: Gestiona las operaciones relacionadas con proyectos.
+- `/actividadRealizada`: Gestiona las operaciones actividadRealizada.
+
+El sistema es capaz de:
+sistema debe ser capaz de:
+* Ingresar usuario
+* Ingresar categoría
+* Ingresar actividad
+* Ingresar hábito
+* Ingresar proyecto
+* Ingresar actividad realizada (cada vez que la persona ejecuta una de las actividades listadas en una categoría, con su fecha hora de inicio y luego de fin)
+* Relacionar actividad con categoría.
+* Relacionar hábito con actividad.
+* Relacionar proyecto con actividad o actividad realizada.
+* Relacionar proyecto y hábito con usuario.
+* Mostrar las actividades de una categoría determinada de un usuario dado.
+* Mostrar las últimas 5 actividades realizadas por un usuario, incluyendo el nombre de la actividad y su categoría.
+* Buscar actividades realizadas por proyecto
+* Mostrar actividades realizadas de un hábito en específico por rango de fecha (mayor a y menor que).
+* Mostrar los hábitos que no tienen actividades realizadas.
+* Buscar actividades realizadas por nombre de la actividad.
+* Mostrar información sobre el tiempo usado en cada categoría.
+* Mostrar información sobre el tiempo usado en cada proyecto.
+* Mostrar actividades abiertas (que no tengan fecha hora de finalización
+* Eliminar actividad realizada y sus relaciones.
+* Eliminar proyecto y sus actividades realizadas.
+* Modificar actividad realizada, tanto sus propios detalles como su relación hacia la actividad.
+
+Se utilizaron metodos POST GET DELETE UPDATE, para realizar las consultas a la api.
+
+## Propósito Educativo
+
+Esta actividad ha sido creada para uso educativo de la Universidad Valle del Momboy. El objetivo es desarrollar una API utilizando Node.js, JavaScript y Express.js.
+
+
+
+## Autor
+
+- **Nombres:** 
+    Raymar Terán 25.604.593
+    Daniel Fernández 24.184.695
+    Luis Rodriguez 30.721.284
