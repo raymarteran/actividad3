@@ -3,6 +3,7 @@ const Actividad = require('../models/actividadModel.js');
 const Categoria = require('../models/categoriesModel.js');
 const ActRealizada = require('../models/actRealizadaModel.js');
 const bcrypt = require('bcrypt');
+const { generateToken } = require('../middlewares/auth');
 
 class UsersController {
     getUsers(req, res) {
@@ -68,22 +69,24 @@ class UsersController {
                     reject({ status: 400, error: 'El email ya existe' });
                     return;
                 }
-    
+                
+                //se valida ahora desde el frontend para mejor UX
                 // Validar que las contraseñas coincidan
-                if (newUser.password !== newUser.repassword) {
+                /*if (newUser.password !== newUser.repassword) {
                     reject({ status: 400, error: 'Las contraseñas no coinciden' });
                     return;
-                }
-    
+                }*/
+
                 // Encriptar la contraseña
                 newUser.password = bcrypt.hashSync(newUser.password, 10);
-                delete newUser.repassword; // Eliminar el campo repassword
+                delete newUser.repassword;
     
                 // Guardar el usuario
                 const user = new User(newUser); // Crear una instancia del modelo
-                await user.save(); // Guardar en la base de datos
+                const newUserCreado = await user.save(); // Guardar en la base de datos
+                const token = generateToken(newUserCreado);
     
-                resolve({ status: 201, message: 'Usuario creado correctamente', user });
+                resolve({ status: 201, message: 'Usuario creado correctamente', user, token });
             } catch (error) {
                 console.error("Error en postUser:", error);
                 reject({ status: 500, error: 'Error al crear el usuario' });
@@ -143,6 +146,37 @@ class UsersController {
             } catch (error) {
                 console.error("Error en getLastActividadesRealizadas:", error);
                 reject({ status: 500, error: 'Error al obtener las actividades realizadas' });
+            }
+        });
+    };
+
+    getUserByUsername = async (username) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const user = await User.findOne({ userName: username });
+                resolve(user);
+            } catch (error) {
+                console.error("Error en getUserByUsername:", error);
+                reject({ status: 500, error: 'Error al obtener el usuario' });
+            }
+        });
+    };
+
+    loginUser = async (username, password) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const user = await User.findOne({ userName: username });
+                if (!user) {
+                    resolve({ status: 404, message: 'Usuario no encontrado' });
+                }
+                const isPasswordValid = await bcrypt.compare(password, user.password);
+                if (!isPasswordValid) {
+                    resolve({ status: 401, message: 'Contraseña incorrecta' });
+                }
+                resolve({ status: 200, message: 'Login exitoso', user });
+            } catch (error) {
+                console.error("Error en loginUser:", error);
+                reject({ status: 500, error: 'Error al iniciar sesión' });
             }
         });
     };

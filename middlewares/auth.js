@@ -4,11 +4,11 @@ const { secretKey } = require('../config/config.js');
  
 // Middleware para verificar el token
 const verifyToken = (req, res, next) => {
-const token = req.headers['authorization'];
-if (!token) {
-    return res.status(403).send('Token no proporcionado');
-}
-jwt.verify(token, secretKey, (err, decoded) => {
+    const token = req.headers['authorization'];
+    if (!token) {
+        return res.status(403).json({ error: 'Token no proporcionado, No tiene persmisos' });
+    }
+    jwt.verify(token, secretKey, (err, decoded) => {
         if (err) {
             return res.status(500).send('Error al autenticar el token');
         }

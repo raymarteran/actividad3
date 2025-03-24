@@ -11,6 +11,9 @@ mongoose.connect(mongoURI)
 .then(() => console.log('MongoDB conectado'))
 .catch(err => console.error('Error al conectar a MongoDB:', err));
 
+// Middleware para servir archivos estáticos
+const { verifyToken } = require('./middlewares/auth.js'); 
+
 // Importar las rutas
 const routesUsers = require('./routes/users.js');
 const routesCategories = require('./routes/categories.js');
@@ -18,15 +21,16 @@ const routesactividad = require('./routes/actividad.js');
 const habito = require('./routes/habito.js');
 const proyecto = require('./routes/proyecto.js');
 const actividadRealizada = require('./routes/actividadRealizada.js');
+const authRoutes = require('./routes/auth.js');
 
 
-app.use('/users', routesUsers);
-app.use('/categories', routesCategories);
-app.use('/actividad', routesactividad);
-app.use('/habito', habito);
-app.use('/proyecto', proyecto);
-app.use('/actividadRealizada', actividadRealizada);
-
+app.use('/users', verifyToken, routesUsers);
+app.use('/categories', verifyToken, routesCategories);
+app.use('/actividad', verifyToken, routesactividad);
+app.use('/habito', verifyToken, habito);
+app.use('/proyecto', verifyToken, proyecto);
+app.use('/actividadRealizada', verifyToken, actividadRealizada);
+app.use('/auth', authRoutes);
 
 const path = require('path');
 
