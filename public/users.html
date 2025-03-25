@@ -196,7 +196,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    'Authorization': `${token}`
                 },
                 body: JSON.stringify(user)
             })
@@ -215,7 +215,13 @@
         }
 
         function showEditUserForm(userId) {
-            fetch(`/users/${userId}`)
+            fetch(`/users/${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `${token}`
+                }
+            })
             .then(response => response.json())
             .then(user => {
                 const dataUser = user.user;
@@ -248,7 +254,9 @@
             fetch(`/users/${userId}`, {
                 method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `${token}`
+                    
                 },
                 body: JSON.stringify(user)
             })
@@ -265,7 +273,11 @@
 
         function deleteUser(userId) {
             fetch(`/users/${userId}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `${token}`
+                }
             })
             .then(response => response.json())
             .then(data => {

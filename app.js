@@ -24,7 +24,7 @@ const actividadRealizada = require('./routes/actividadRealizada.js');
 const authRoutes = require('./routes/auth.js');
 
 
-app.use('/users', routesUsers);
+app.use('/users', verifyToken, routesUsers);
 app.use('/categories', verifyToken, routesCategories);
 app.use('/actividad', verifyToken, routesactividad);
 app.use('/habito', verifyToken, habito);
