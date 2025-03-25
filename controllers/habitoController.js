@@ -102,6 +102,7 @@ class HabitoController {
                 .populate('idUser');
                 resolve(habitos);
             } catch (error) {
+                console.log("error desdes el controller", error);
                 reject({ status: 500, error: 'Error al obtener los hábitos sin actividades realizadas' });
             }
         });

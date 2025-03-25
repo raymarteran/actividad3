@@ -7,7 +7,17 @@ const habitoController = new HabitoController();
 router.get('/', (req, res, next) => {
     habitoController.getHabitos(req.body)
     .then((result) => {
-        console.log("result get Habitos", result);  
+        //console.log("result get Habitos", result);  
+        res.send(result);
+    })
+    .catch((err) => {
+        next(err);
+    });
+});
+
+router.get('/habitosSinActRealizadas', (req, res, next) => {
+    habitoController.getHabitosNoActividadesRealizadas(req.body)
+    .then((result) => {
         res.send(result);
     })
     .catch((err) => {
@@ -42,17 +52,6 @@ router.get('/:id', (req, res, next) => {
     habitoController.getHabitoById(req.params.id)
     .then((result) => {
         console.log("result get Habito", result);  
-        res.send(result);
-    })
-    .catch((err) => {
-        next(err);
-    });
-});
-
-router.get('/habitos-no-actividades-realizadas', (req, res, next) => {
-    habitoController.getHabitosNoActividadesRealizadas(req.body)
-    .then((result) => {
-        console.log("result get Habitos sin actividades realizadas", result);  
         res.send(result);
     })
     .catch((err) => {

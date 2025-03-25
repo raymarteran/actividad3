@@ -128,7 +128,7 @@
                         const habitoElement = document.createElement('li');
                         habitoElement.classList.add('habito');
                         habitoElement.innerHTML = `
-                            <h2>${habito.name}</h2>
+                            <h2>Nombre del Habito: ${habito.name}</h2>
                             <p>Actividad: ${habito.idActividad.name}</p>
                             <p>Categoría: ${habito.idActividad.idCategoria.name}</p>
                             <p>Usuario: ${habito.idUser.name} ${habito.idUser.lastName}</p>
@@ -322,7 +322,7 @@
         }
 
         function showHabitosSinActividades() {
-            fetch('/habito/habitos-no-actividades-realizadas', {
+            fetch('/habito/habitosSinActRealizadas', {
                 method: 'GET',
                 headers: {
                     'Authorization': `${token}`
@@ -337,16 +337,35 @@
                     document.getElementById('noHabitos').style.display = 'block';
                 } else {
                     document.getElementById('noHabitos').style.display = 'none';
+                    //agregar un titulo que indique que son los habitos que no tienene actividades realizadas y agregarlo como un h1 dentro de habitosList
+                    const title = document.createElement('h1');
+                    title.innerText = 'Hábitos sin actividades realizadas';
+                    habitosList.appendChild(title);
                     habitos.forEach(habito => {
                         const habitoElement = document.createElement('li');
                         habitoElement.innerHTML = `
-                            <h2>${habito.name}</h2>
-                            <p>Actividad: ${habito.idActividad}</p>
-                            <p>Categoría: ${habito.idActividad.idCategoria}</p>
-                            <p>Usuario: ${habito.idUser}</p>
+                            <h2>Nombre del Habito: ${habito.name}</h2>
+                            <p>Actividad: ${habito.idActividad.name}</p>
+                            <p>Categoría: ${habito.idActividad.idCategoria.name}</p>
+                            <p>Usuario: ${habito.idUser.name} ${habito.idUser.lastName}</p>
                         `;
                         habitosList.appendChild(habitoElement);
                     });
+
+                    //agregar un boton para volver a ver todos los habitos
+                    const volverButton = document.createElement('button');
+                    volverButton.classList.add('create-button');
+                    volverButton.style.marginTop = '5px';
+                    volverButton.style.marginBottom = '10px';
+                    volverButton.style.backgroundColor = '#007BFF';
+                    volverButton.style.color = '#fff';
+                    volverButton.style.border = 'none';
+                    volverButton.innerText = 'Ver todos los habitos';
+                    volverButton.addEventListener('click', () => {
+                        document.getElementById('noHabitos').style.display = 'none';
+                        fetchHabitos();
+                    });
+                    document.getElementById('habitosList').appendChild(volverButton);
                 }
             })
             .catch(error => {
