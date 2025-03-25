@@ -99,6 +99,7 @@
                 console.log(data)
                 if (data.token) {
                         localStorage.setItem('token', data.token);
+                        localStorage.setItem('idUserLog', data.user.id);
                         window.location.href = '/home';
                 } else {
                     showModal(data.message, 'error');

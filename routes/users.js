@@ -35,6 +35,14 @@ router.get('/:id', (req, res, next) => {
     })
 });
 
+router.get('/idBD/:objectId', (req, res, next) => {
+    usersController.getUserByIdBD(req.params.objectId)
+    .then((result) => {
+        console.log("result get User", result);  
+        res.send(result);
+    })
+});
+
 router.put('/:id', (req, res, next) => {
     usersController.updateUser(req.params.id, req.body)
     .then((result) => {

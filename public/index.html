@@ -154,22 +154,60 @@
         .comments-button:hover {
             background-color: #0056b3;
         }
+
+        .cerrar-sesion-button {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .divCerrarSesion {
+            width: 98%;
+            display: flex;
+            align-items: end;
+            justify-content: end;
+            text-align: end;
+            padding: 1.5rem;
+        }
     </style>
     <script>
         const token = localStorage.getItem('token');
+        let userLogg = {}
         console.log(token)
-        function getToken() {
-            return localStorage.getItem('token');
-        }
-        console.log(getToken())
         document.addEventListener('DOMContentLoaded', () => {
-            const token = getToken();
             if (!token) {
                 showModal("token no ingresado debe iniciar sesion, no tiene permisos para permanecer en esta pantalla", 'error');
                 //alert("token no ingresado debe iniciar sesion, no tiene permisos para permanecer en esta pantalla")
             }
             fetchUsers();
+            const idUserLogin = localStorage.getItem('idUserLog');
+            getDataUser(idUserLogin);
         });
+
+
+        function getDataUser(idUserLogin) {
+            fetch(`/users/${idUserLogin}`,{
+              method: 'GET',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `${token}`
+              },
+          })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("getData user login", data);
+                    userLogg = data.user;
+                    document.getElementById('holaBienvenido').innerHTML = `Hola ${userLogg.name} ${userLogg.lastName}! Bienvenido`;
+                    
+                })
+                .catch(error => console.error(error));
+        }
 
         
 
@@ -221,31 +259,7 @@
         }
         
         
-        function createPublicacion(event) {
-            event.preventDefault();
-            const formData = new FormData(document.getElementById('publicationForm'));
-            const publicationData = {
-                title: formData.get('title'),
-                description: formData.get('description'),
-                urlMedia: formData.get('urlMedia'),
-                idUser: formData.get('userId')
-            };
-            fetch('/api/publi', {
-                method: 'POST',
-                headers: {
-                'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(publicationData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data)
-                showModal(data.message);
-                document.getElementById('publicationForm').reset();
-                document.getElementById('createPublicationForm').style.display = 'none';
-            })
-            .catch(error => console.error('Error creating publication:', error));
-        }
+        
         function closeModal() {
             document.getElementById('modal').remove();
         }
@@ -283,7 +297,7 @@
 
 
         function fetchUsers() {
-            fetch('/api/users')
+            fetch('/users')
             .then(response => response.json())
             .then(users => {
                 const userSelect = document.createElement('select');
@@ -329,38 +343,20 @@
             form.urlMedia.value = urlMedia;
         }
 
-        function editPublicacion(event) {
-            event.preventDefault();
-            const formData = new FormData(document.getElementById('editPublicationFormss'));
-            const publicationData = {
-                title: formData.get('title'),
-                description: formData.get('description'),
-                urlMedia: formData.get('urlMedia')
-            };
-            const publicacionId = formData.get('publicacionId');
-            console.log("entra en el editPublicacion")
-            console.log(publicationData)
-            console.log(publicacionId)
-            fetch(`/api/publi/${publicacionId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(publicationData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                showModal(data.message);
-                document.getElementById('editPublicationFormss').reset();
-                document.getElementById('editPublicationForm').style.display = 'none';
-            })
-            .catch(error => console.error('Error editing publication:', error));
+        function cerrarSesion () {
+            localStorage.removeItem('token');
+            window.location.href = '/';
         }
 
     </script>
 </head>
 <body>
-    <p>Hola! Bienvenido</p>
+    
+    <p id="holaBienvenido">Hola! Bienvenido</p>
+    <!--Agregar el boton de cerrar sesion -->
+    <div class="divCerrarSesion">
+        <button type="button" class="cerrar-sesion-button" onclick="cerrarSesion()">Cerrar sesión</button>
+    </div>
     <nav>
         <ul>
             <li><a href="/usersVista">Usuarios</a></li>
