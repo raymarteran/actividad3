@@ -235,10 +235,11 @@
             })
             .then(response => response.json())
             .then(habito => {
-                document.getElementById('editHabitoId').value = habito._id;
-                document.getElementById('editHabitoName').value = habito.name;
-                document.getElementById('editHabitoActividad').value = habito.idActividad;
-                document.getElementById('editHabitoUser').value = habito.idUser;
+                const habitoEdit = habito.habito
+                document.getElementById('editHabitoId').value = habitoEdit._id;
+                document.getElementById('editHabitoName').value = habitoEdit.name;
+                document.getElementById('editHabitoActividad').value = habitoEdit.idActividad._id;
+                document.getElementById('editHabitoUser').value = habitoEdit.idUser._id;
                 document.getElementById('createHabitoDiv').style.display = 'none';
                 document.getElementById('editHabitoDiv').style.display = 'block';
             })
@@ -319,6 +320,40 @@
                 document.body.removeChild(modal);
             }
         }
+
+        function showHabitosSinActividades() {
+            fetch('/habito/habitos-no-actividades-realizadas', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `${token}`
+                }
+            })
+            .then(response => response.json())
+            .then(habitos => {
+                console.log('Hábitos sin actividades:', habitos);
+                const habitosList = document.getElementById('habitosList');
+                habitosList.innerHTML = '';
+                if (habitos.length === 0) {
+                    document.getElementById('noHabitos').style.display = 'block';
+                } else {
+                    document.getElementById('noHabitos').style.display = 'none';
+                    habitos.forEach(habito => {
+                        const habitoElement = document.createElement('li');
+                        habitoElement.innerHTML = `
+                            <h2>${habito.name}</h2>
+                            <p>Actividad: ${habito.idActividad}</p>
+                            <p>Categoría: ${habito.idActividad.idCategoria}</p>
+                            <p>Usuario: ${habito.idUser}</p>
+                        `;
+                        habitosList.appendChild(habitoElement);
+                    });
+                }
+            })
+            .catch(error => {
+                console.log('Error fetching hábitos sin actividades:', error);
+            
+            });
+        }
     </script>
 </head>
 <body>
@@ -326,6 +361,7 @@
     <nav>
         <ul>
             <li><a href="#" onclick="showCreateHabitoForm()">Crear Hábito</a></li>
+            <li><a href="#" onclick="showHabitosSinActividades()">Ver Habitos Sin Actividades Realizadas</a></li>
             <li><a href="/home">Home</a></li>
         </ul>
     </nav>

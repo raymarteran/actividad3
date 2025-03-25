@@ -27,10 +27,43 @@ router.post('/', (req, res, next) => {
     });
 });
 
+router.delete('/:id', (req, res, next) => {
+    habitoController.deleteHabito(req.params.id)
+    .then((result) => {
+        console.log("result delete Habito", result);  
+        res.send(result);
+    })
+    .catch((err) => {
+        next(err);
+    });
+});
+
+router.get('/:id', (req, res, next) => {
+    habitoController.getHabitoById(req.params.id)
+    .then((result) => {
+        console.log("result get Habito", result);  
+        res.send(result);
+    })
+    .catch((err) => {
+        next(err);
+    });
+});
+
 router.get('/habitos-no-actividades-realizadas', (req, res, next) => {
     habitoController.getHabitosNoActividadesRealizadas(req.body)
     .then((result) => {
         console.log("result get Habitos sin actividades realizadas", result);  
+        res.send(result);
+    })
+    .catch((err) => {
+        next(err);
+    });
+});
+
+router.put('/:id', (req, res, next) => {
+    habitoController.putHabito(req.params.id, req.body)
+    .then((result) => {
+        console.log("result put Habito", result);  
         res.send(result);
     })
     .catch((err) => {
