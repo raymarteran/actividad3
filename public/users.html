@@ -127,6 +127,7 @@
         }
     </style>
     <script>
+        const token = localStorage.getItem('token');
         document.addEventListener('DOMContentLoaded', () => {
             fetchUsers();
             const token = getToken();
@@ -141,7 +142,13 @@
          }
 
         function fetchUsers() {
-            fetch('/users')
+            fetch('/users', {
+              method: 'GET',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `${token}`
+              },
+          })
             .then(response => response.json())
             .then(data => {
                 const usersList = document.getElementById('usersList');
@@ -300,7 +307,7 @@
             document.body.appendChild(modal);
         }
 
-        closeAll () {
+        function closeAll () {
             window.location.href = '/';
         }
 
@@ -317,7 +324,7 @@
     <nav>
         <ul>
             <li><a href="#" onclick="showCreateUserForm()">Crear Usuario</a></li>
-            <li><a href="/">Home</a></li>
+            <li><a href="/home">Home</a></li>
         </ul>
     </nav>
     <div id="createUserForm">

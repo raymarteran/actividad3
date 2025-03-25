@@ -7,7 +7,6 @@ const usersController = new UsersController();
 router.get('/', (req, res, next)=>{
     usersController.getUsers(req.body)
     .then((result) => {
-        console.log("result get Users", result);  
         res.send(result);
     })
 });
@@ -30,7 +29,7 @@ router.delete('/:id', (req, res, next) => {
 router.get('/:id', (req, res, next) => {
     usersController.getUserById(req.params.id)
     .then((result) => {
-        console.log("result get User", result);  
+        //console.log("result get User", result);  
         res.send(result);
     })
 });
@@ -38,7 +37,7 @@ router.get('/:id', (req, res, next) => {
 router.get('/idBD/:objectId', (req, res, next) => {
     usersController.getUserByIdBD(req.params.objectId)
     .then((result) => {
-        console.log("result get User", result);  
+        //console.log("result get User", result);  
         res.send(result);
     })
 });

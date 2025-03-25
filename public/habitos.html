@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publicbs - Hábitos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h2 {
+            color: #333;
+        }
+        p {
+            color: #000;
+            font-size: 2em;
+            font-weight: bold;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 15px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #fff;
+        }
+        nav {
+            background-color: #007BFF;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        nav ul {
+            display: flex;
+            justify-content: flex-start;
+            margin: 0;
+            padding: 0;
+        }
+        nav li {
+            list-style: none;
+            cursor: pointer;
+            margin-right: 20px;
+        }
+        nav a {
+            color: #000;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        #createHabitoForm, #editHabitoForm {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+        #createHabitoForm input, #editHabitoForm input {
+            display: block;
+            margin-bottom: 10px;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .create-button, .edit-button {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        .create-button:hover, .edit-button:hover {
+            background-color: #218838;
+        }
+        .delete-button {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        .delete-button:hover {
+            background-color: #c82333;
+        }
+    </style>
+    <script>
+        const token = localStorage.getItem('token');
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('createHabitoDiv').style.display = 'none';
+            document.getElementById('editHabitoDiv').style.display = 'none';
+            fetchHabitos();
+            fetchActivities();
+            fetchUsers();
+        });
+
+        function fetchHabitos() {
+            fetch('/habito', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `${token}`
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("consulta de los habitos", data);
+                const habitosList = document.getElementById('habitosList');
+                habitosList.innerHTML = '';
+                if (data.length === 0) {
+                    document.getElementById('noHabitos').style.display = 'block';
+                } else {
+                    document.getElementById('noHabitos').style.display = 'none';
+                    data.forEach(habito => {
+                        const habitoElement = document.createElement('li');
+                        habitoElement.classList.add('habito');
+                        habitoElement.innerHTML = `
+                            <h2>${habito.name}</h2>
+                            <p>Actividad: ${habito.idActividad.name}</p>
+                            <p>Categoría: ${habito.idActividad.idCategoria.name}</p>
+                            <p>Usuario: ${habito.idUser.name} ${habito.idUser.lastName}</p>
+                            <button onclick="showEditHabitoForm('${habito._id}')" class="edit-button">Modificar</button>
+                            <button onclick="deleteHabito('${habito._id}')" class="delete-button">Eliminar</button>
+                        `;
+                        habitosList.appendChild(habitoElement);
+                    });
+                }
+            })
+            .catch(error => console.error('Error fetching hábitos:', error));
+        }
+
+        function fetchActivities() {
+            fetch('/actividad', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `${token}`
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                const activitySelect = document.getElementById('habitoActividad');
+                const editActivitySelect = document.getElementById('editHabitoActividad');
+                activitySelect.innerHTML = '<option value="">Seleccione una actividad</option>';
+                editActivitySelect.innerHTML = '<option value="">Seleccione una actividad</option>';
+                data.forEach(activity => {
+                    const option = document.createElement('option');
+                    option.value = activity._id;
+                    option.textContent = activity.name;
+                    activitySelect.appendChild(option);
+                    editActivitySelect.appendChild(option.cloneNode(true));
+                });
+            })
+            .catch(error => console.error('Error fetching activities:', error));
+        }
+
+        function fetchUsers() {
+            fetch('/users')
+            .then(response => response.json())
+            .then(data => {
+                const userSelect = document.getElementById('habitoUser');
+                const editUserSelect = document.getElementById('editHabitoUser');
+                userSelect.innerHTML = '<option value="">Seleccione un usuario</option>';
+                editUserSelect.innerHTML = '<option value="">Seleccione un usuario</option>';
+                data.forEach(user => {
+                    const option = document.createElement('option');
+                    option.value = user._id;
+                    option.textContent = `${user.name} ${user.lastName}`;
+                    userSelect.appendChild(option);
+                    editUserSelect.appendChild(option.cloneNode(true));
+                });
+            })
+            .catch(error => console.error('Error fetching users:', error));
+        }
+
+        function showCreateHabitoForm() {
+            document.getElementById('createHabitoDiv').style.display = 'block';
+            document.getElementById('editHabitoDiv').style.display = 'none';
+        }
+
+        function createHabito(event) {
+            event.preventDefault();
+            const name = document.getElementById('habitoName').value;
+            const idActividad = document.getElementById('habitoActividad').value;
+            const idUser = document.getElementById('habitoUser').value;
+
+            const habito = {
+                name,
+                idActividad,
+                idUser
+            };
+
+            fetch('/habito', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `${token}`
+                },
+                body: JSON.stringify(habito)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Hábito creado:', data);
+                showModal('Hábito registrado exitosamente');
+                document.getElementById('createHabitoForm').reset();
+                document.getElementById('createHabitoDiv').style.display = 'none';
+                fetchHabitos();
+            })
+            .catch(error => {
+                console.error('Error creating hábito:', error)
+                console.log("Error creating hábito:", error);
+            });
+
+            
+        }
+
+        function showEditHabitoForm(habitoId) {
+            fetch(`/habito/${habitoId}`, {
+                headers: {
+                    'Authorization': `${token}`
+                }
+            })
+            .then(response => response.json())
+            .then(habito => {
+                document.getElementById('editHabitoId').value = habito._id;
+                document.getElementById('editHabitoName').value = habito.name;
+                document.getElementById('editHabitoActividad').value = habito.idActividad;
+                document.getElementById('editHabitoUser').value = habito.idUser;
+                document.getElementById('createHabitoDiv').style.display = 'none';
+                document.getElementById('editHabitoDiv').style.display = 'block';
+            })
+            .catch(error => console.error('Error fetching hábito:', error));
+        }
+
+        function editHabito(event) {
+            event.preventDefault();
+            const habitoId = document.getElementById('editHabitoId').value;
+            const name = document.getElementById('editHabitoName').value;
+            const idActividad = document.getElementById('editHabitoActividad').value;
+            const idUser = document.getElementById('editHabitoUser').value;
+
+            const habito = {
+                name,
+                idActividad,
+                idUser
+            };
+
+            fetch(`/habito/${habitoId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `${token}`
+                },
+                body: JSON.stringify(habito)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Hábito actualizado:', data);
+                showModal('Hábito modificado exitosamente');
+                document.getElementById('editHabitoForm').reset();
+                document.getElementById('editHabitoDiv').style.display = 'none';
+                fetchHabitos();
+            })
+            .catch(error => console.error('Error updating hábito:', error));
+        }
+
+        function deleteHabito(habitoId) {
+            if (confirm('¿Estás seguro de que deseas eliminar este hábito?')) {
+                fetch(`/habito/${habitoId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `${token}`
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Hábito eliminado:', data);
+                    showModal('Hábito eliminado exitosamente');
+                    fetchHabitos();
+                })
+                .catch(error => console.error('Error deleting hábito:', error));
+            }
+        }
+
+        function showModal(message) {
+            const modal = document.createElement('div');
+            modal.id = 'modal';
+            modal.style.position = 'fixed';
+            modal.style.top = '50%';
+            modal.style.left = '50%';
+            modal.style.transform = 'translate(-50%, -50%)';
+            modal.style.backgroundColor = '#fff';
+            modal.style.padding = '20px';
+            modal.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
+            modal.style.zIndex = '1000';
+            modal.innerHTML = `
+                <p>${message}</p>
+                <button onclick="closeModal()">Cerrar</button>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            if (modal) {
+                document.body.removeChild(modal);
+            }
+        }
+    </script>
+</head>
+<body>
+    <p>Hola! Bienvenido</p>
+    <nav>
+        <ul>
+            <li><a href="#" onclick="showCreateHabitoForm()">Crear Hábito</a></li>
+            <li><a href="/home">Home</a></li>
+        </ul>
+    </nav>
+    <div id="createHabitoDiv">
+        <h2>Crear Hábito</h2>
+        <form onsubmit="createHabito(event)" id="createHabitoForm">
+            <input type="text" id="habitoName" name="name" placeholder="Nombre del hábito" required>
+            <select id="habitoActividad" required>
+                <option value="">Seleccione una actividad</option>
+            </select>
+            <select id="habitoUser" required>
+                <option value="">Seleccione un usuario</option>
+            </select>
+            <button type="submit" class="create-button">Crear</button>
+        </form>
+    </div>
+    <div id="editHabitoDiv">
+        <h2>Modificar Hábito</h2>
+        <form onsubmit="editHabito(event)" id="editHabitoForm">
+            <input type="hidden" id="editHabitoId">
+            <input type="text" id="editHabitoName" name="name" placeholder="Nombre del hábito" required>
+            <select id="editHabitoActividad" required>
+                <option value="">Seleccione una actividad</option>
+            </select>
+            <select id="editHabitoUser" required>
+                <option value="">Seleccione un usuario</option>
+            </select>
+            <button type="submit" class="edit-button">Modificar</button>
+        </form>
+    </div>
+    <p id="welcomeMessage"></p>
+    <h2 id="habitosTitle">Hábitos</h2>
+    <ul id="habitosList"></ul>
+    <p id="noHabitos" style="display: none;">No hay hábitos registrados</p>
+</body>
+</html>

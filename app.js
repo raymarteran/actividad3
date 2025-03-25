@@ -58,6 +58,9 @@ app.get('/categorias', (req, res) => {
 app.get('/actividades', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'actividades.html'));
 })
+app.get('/habitos', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'habitos.html'));
+})
 
 const userModel = require('./models/userModel.js');
 const categoriesModel = require('./models/categoriesModel.js');

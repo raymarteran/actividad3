@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const HabitoSchema = new Schema({
   name: { type: String, required: true, unique: true },
-  idActividad: { type: Number, required: true },
-  idUser: { type: Number, required: true }
+  idActividad: { type: ObjectId, ref:'Actividad', required: true },
+  idUser: { type: ObjectId, ref:'User', required: true }
 });
 
 module.exports = mongoose.model('Habito', HabitoSchema);

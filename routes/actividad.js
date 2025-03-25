@@ -7,7 +7,7 @@ const actividadController = new ActividadController();
 router.get('/', (req, res, next) => {
     actividadController.getActividades(req.body)
     .then((result) => {
-        console.log("result get Actividades", result);  
+        //console.log("result get Actividades", result);  
         res.send(result);
     })
     .catch((err) => {

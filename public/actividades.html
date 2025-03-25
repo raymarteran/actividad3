@@ -98,6 +98,7 @@
         }
     </style>
     <script>
+        const token = localStorage.getItem('token');
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('createActivityDiv').style.display = 'none';
             document.getElementById('editActivityDiv').style.display = 'none';
@@ -107,7 +108,13 @@
         });
 
         function fetchActivities() {
-            fetch('/actividad')
+            fetch('/actividad', {
+              method: 'GET',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `${token}`
+              },
+          })
             .then(response => response.json())
             .then(data => {
                 const activitiesList = document.getElementById('activitiesList');
@@ -130,7 +137,13 @@
         }
 
         function fetchCategories() {
-            fetch('/categories')
+            fetch('/categories', {
+              method: 'GET',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `${token}`
+              },
+          })
             .then(response => response.json())
             .then(data => {
                 const categorySelect = document.getElementById('activityCategory');
@@ -187,7 +200,8 @@
             fetch('/actividad', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `${token}`
                 },
                 body: JSON.stringify(activity)
             })
@@ -291,7 +305,7 @@
     <nav>
         <ul>
             <li><a href="#" onclick="showCreateActivityForm()">Crear Actividad</a></li>
-            <li><a href="/">Home</a></li>
+            <li><a href="/home">Home</a></li>
         </ul>
     </nav>
     <div id="createActivityDiv">

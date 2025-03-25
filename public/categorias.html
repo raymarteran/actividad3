@@ -98,6 +98,7 @@
         }
     </style>
     <script>
+        const token = localStorage.getItem('token');
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('createCategoryDiv').style.display = 'none';
             document.getElementById('editCategoryDiv').style.display = 'none';
@@ -105,7 +106,13 @@
         });
 
         function fetchCategories() {
-            fetch('/categories')
+            fetch('/categories', {
+              method: 'GET',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `${token}`
+              },
+          })
             .then(response => response.json())
             .then(data => {
                 const categoriesList = document.getElementById('categoriesList');
@@ -141,7 +148,8 @@
             fetch('/categories', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `${token}`
                 },
                 body: JSON.stringify(category)
             })
@@ -157,7 +165,13 @@
         }
 
         function showEditCategoryForm(categoryId) {
-            fetch(`/categories/${categoryId}`)
+            fetch(`/categories/${categoryId}`,{
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `${token}`
+                },
+            })
             .then(response => response.json())
             .then(category => {
                 document.getElementById('editCategoryId').value = category._id;
@@ -180,7 +194,8 @@
             fetch(`/categories/${categoryId}`, {
                 method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `${token}`
                 },
                 body: JSON.stringify(category)
             })
@@ -199,7 +214,11 @@
             console.log("entra en deleteCategory")
             console.log(categoryId)
             fetch(`/categories/${categoryId}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `${token}`
+                },
             })
             .then(response => response.json())
             .then(data => {
@@ -241,7 +260,7 @@
     <nav>
         <ul>
             <li><a href="#" onclick="showCreateCategoryForm()">Crear Categoría</a></li>
-            <li><a href="/">Home</a></li>
+            <li><a href="/home">Home</a></li>
         </ul>
     </nav>
     <div id="createCategoryDiv">

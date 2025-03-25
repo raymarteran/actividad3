@@ -16,6 +16,7 @@ router.get('/', (req, res, next) => {
 });
 
 router.post('/', (req, res, next) => {
+    console.log("req.body", req.body);
     habitoController.postHabito(req.body)
     .then((result) => {
         console.log("result post Habito", result);  
